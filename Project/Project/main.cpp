@@ -11,4 +11,6 @@ int main(void)
 	auto app = new App();
 	app->Run();
 	delete app;
+
+	return 0;
 }

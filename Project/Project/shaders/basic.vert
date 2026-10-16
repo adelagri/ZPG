@@ -7,55 +7,59 @@
 #version 330 core
 
 layout (location = 0) in vec3 position;
-layout (location = 1) in vec3 color;
+layout (location = 1) in vec3 normal;
+layout (location = 2) in vec3 color;
 
 out vec3 vertexColor;
+out vec3 vertexNormal;
 
-uniform float angle;
-uniform vec3 translation;
-uniform vec3 scale;
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix = mat4(1.0);
+uniform mat4 projectionMatrix = mat4(1.0);
 
-uniform int rotationAxis; // 0 for x-axis, 1 for y-axis, 2 for z-axis
+uniform float hourAngle;
+uniform float minuteAngle;
+uniform float secondAngle;
 
-vec3 rotate(vec3 pos, float a, int axis) 
+vec3 rotateZ(vec3 p, float a)
 {
     float c = cos(a);
     float s = sin(a);
+    return vec3(c * p.x - s * p.y, s * p.x + c * p.y, p.z);
+}
 
-    vec3 rotated;
-
-    if (axis == 0) { // rotation around x-axis
-        rotated.x = pos.x;
-        rotated.y = c * pos.y - s * pos.z;
-        rotated.z = s * pos.y + c * pos.z;
-    } 
-    else if (axis == 1) { // rotation around y-axis
-        rotated.x = c * pos.x + s * pos.z;
-        rotated.y = pos.y;
-        rotated.z = -s * pos.x + c * pos.z;
-    } 
-    else if (axis == 2) { // rotation around z-axis
-        rotated.x = c * pos.x - s * pos.y;
-        rotated.y = s * pos.x + c * pos.y;
-        rotated.z = pos.z;
-    } 
-    else {
-        rotated = pos; // no rotation if axis is invalid
-    }
-    return rotated;
+bool sameColor(vec3 a, vec3 b)
+{
+    return distance(a, b) == 0;
 }
 
 void main()
 {
-    // 1. change of scale
-    vec3 scaled = position * scale;
+    if (sameColor(color, vec3(0.0, 0.0, 0.0)))  // black
+    {
+        
+    } else if (sameColor(color, vec3(1.0, 1.0, 1.0)))  // white
+    {
+        
+    } else if (sameColor(color, vec3(1.0, 0.0, 0.0)))  // red
+    {
 
-    // 2. rotation
-    vec3 rotated = rotate(scaled, angle, rotationAxis);
+    } else if (sameColor(color, vec3(0.0, 0.0, 1.0)))  // blue
+    {
 
-    // 3. translation
-    vec3 finalPosition = rotated + translation;
+    } else if (sameColor(color, vec3(0.0, 1.0, 0.0)))  // green
+    {
+        
+    } else if (sameColor(color, vec3(1.0, 1.0, 0.0)))  // yellow
+    {
+        
+    } else if (sameColor(color, vec3(1.0, 0.5, 0.0)))  // orange
+    {
+        
+    }
 
     vertexColor = color;
-    gl_Position = vec4(finalPosition, 1.0);
+    vertexNormal = normal;
+
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
 }

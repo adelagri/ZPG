@@ -31,6 +31,10 @@
 #include "suzi_flat.h"
 #include "suzi_smooth.h"
 #include "tree.h"
+#include "earth.h"
+#include "sun.h"
+#include "moon.h"
+#include "clock.h"
 
 //Include GLM  
 #include <glm/vec3.hpp> // glm::vec3
@@ -58,6 +62,14 @@ private:
 	int Width, Height;
 	float Ratio;
 
+	glm::vec3 eye{ 0.0f, 3.0f, 10.0f };   // poloha kamery
+	glm::vec3 target{ 0.0f, 0.0f, -1.0f }; // směr pohledu
+	glm::vec3 up{ 0.0f, 1.0f, 0.0f };
+	float alpha = 1.5708f;    // úhel od osy Y (π/2 = vodorovně)
+	float fi = -1.5708f;      // úhel v rovině XZ (-π/2 = pohled podél -Z)
+	double lastX = 0, lastY = 0;
+	bool firstMouse = true;
+
 	std::vector<Scene*> scenes;
 	int currentSceneIndex = 0;
 
@@ -75,8 +87,5 @@ private:
 	glm::mat4 View;
 	glm::mat4 ModelMatrix;
 
-	// příznaky, jestli je klávesa právě držená (pro plynulý pohyb)
-	bool rotateLeftPressed = false;
-	bool rotateRightPressed = false;
 };
 

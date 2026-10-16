@@ -12,10 +12,10 @@
 class DrawableObject
 {
 public:
-	DrawableObject(Model* model, ShaderProgram* shader);
+	DrawableObject(Model* model, ShaderProgram* shader, std::shared_ptr<Transformation> transformation);
 	void Draw();
 
-	Transformation transform;	// Transformation data for the object - public (KeyCallback has direct access)
+	std::shared_ptr<Transformation> transformation; // Transformation component for the object
 
 private:
 	Model* model;

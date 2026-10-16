@@ -21,7 +21,6 @@ public:
 	ShaderProgram(const char* vertexPath, const char* fragmentPath);
 	~ShaderProgram();
 	void Use();
-	GLuint GetID() const { return Id; }
 
 	void SetUniform1i(const char* name, int value);
 	void SetUniform1f(const char* name, float value);
@@ -29,8 +28,10 @@ public:
 	void SetUniformMatrix4fv(const char* name, const glm::mat4& matrix);
 
 private:
-	GLuint Id;
+	GLuint Id = 0;
 	Shader* VertexShader;
 	Shader* FragmentShader;
+
+	GLuint GetID() const { return Id; }
 };
 

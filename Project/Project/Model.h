@@ -15,6 +15,7 @@ class Model
 public:
 	Model(const float* verticies, int vertexCount, int floatsPerVertex);
 	~Model();
+
 	void Draw();
 
 private:

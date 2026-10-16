@@ -98,15 +98,24 @@
     <ClInclude Include="Models\triangle.h">
       <Filter>Models</Filter>
     </ClInclude>
+    <ClInclude Include="Models\earth.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Models\sun.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Models\moon.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Models\clock.h">
+      <Filter>Models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basic.frag">
       <Filter>shaders</Filter>
     </None>
     <None Include="shaders\basic.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\basic-forest.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

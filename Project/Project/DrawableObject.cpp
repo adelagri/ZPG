@@ -6,16 +6,16 @@
 
 #include "DrawableObject.h"
 
-DrawableObject::DrawableObject(Model* model, ShaderProgram* shader) : model(model), shader(shader)
+DrawableObject::DrawableObject(Model* model, ShaderProgram* shader, std::shared_ptr<Transformation> transformation)
 {
+	this->model = model;
+	this->shader = shader;
+	this->transformation = std::move(transformation);
 }
 
 void DrawableObject::Draw()
 {
 	shader->Use();
-	shader->SetUniform1f("angle", transform.angle);
-	shader->SetUniform3f("translation", transform.translation);
-	shader->SetUniform3f("scale", transform.scale);
-	shader->SetUniform1i("rotationAxis", transform.rotationAxis);
+	shader->SetUniformMatrix4fv("modelMatrix", transformation->GetMatrix());	// Set the model matrix uniform in the shader
 	model->Draw();
 }
