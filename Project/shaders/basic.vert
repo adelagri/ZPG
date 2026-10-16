@@ -61,5 +61,5 @@ void main()
     vertexColor = color;
     vertexNormal = normal;
 
-    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+    gl_Position = modelMatrix * vec4(position, 1.0);
 }

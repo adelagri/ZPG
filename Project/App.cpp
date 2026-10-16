@@ -114,15 +114,9 @@ void App::Run()
 
 		Scene* currentScene = scenes[currentSceneIndex];
 
-		target.x = sin(alpha) * cos(fi);
-		target.y = cos(alpha);
-		target.z = sin(alpha) * sin(fi);
-
-		View = glm::lookAt(eye, eye + target, up);
-
 		// Clear color and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		currentScene->Draw(View, Projection);
+		currentScene->Draw();
 
 		// Display the rendered frame and process events
 		glfwSwapBuffers(Window); // back buffer becomes front buffer and is displayed on the screen, front buffer becomes back buffer and is used for rendering the next frame
