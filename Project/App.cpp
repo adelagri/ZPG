@@ -102,17 +102,32 @@ void App::GetVersionInfo()
 void App::Run()
 {
 	InitScenes();
-	//double lastFrameTime = glfwGetTime();
+
+	const float TWO_PI = 6.2831853f;
 
 	while (!glfwWindowShouldClose(Window))
 	{
-		/*
-		double currentTime = glfwGetTime();
-		float deltaTime = static_cast<float>(currentTime - lastFrameTime);
-		lastFrameTime = currentTime;
-		*/
-
 		Scene* currentScene = scenes[currentSceneIndex];
+
+		time_t now = time(nullptr);
+		tm local;
+		localtime_s(&local, &now);        // MSVC verze (localtime hlásí varování)
+
+		if (currentSceneIndex == 2) {
+
+			float sec = (float)local.tm_sec;
+			float min = local.tm_min + sec / 60.0f;
+			float hour = (local.tm_hour % 12) + min / 60.0f;
+
+			float secondAngle = -TWO_PI * sec / 60.0f;
+			float minuteAngle = -TWO_PI * min / 60.0f;
+			float hourAngle = -TWO_PI * hour / 12.0f;
+
+			clockShader->Use();
+			clockShader->SetUniform1f("secondAngle", secondAngle);
+			clockShader->SetUniform1f("minuteAngle", minuteAngle);
+			clockShader->SetUniform1f("hourAngle", hourAngle);
+		}
 
 		// Clear color and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -126,11 +141,13 @@ void App::Run()
 
 void App::InitScenes()
 {
-	// Solar system scene with sun, earth and moon
+	// Solar system scene with the sun, earth and moon
 	Scene* scene1 = new Scene();
-	ShaderProgram* shader1 = scene1->AddShader("shaders/basic.vert", "shaders/basic.frag");
+	ShaderProgram* shader1 = scene1->AddShader("shaders/solar-sys.vert", "shaders/default.frag");
 
-	Model* sunModel = scene1->AddModel(sun, sizeof(sun) / (sizeof(float) * 9), 9);
+	Model* sunModel = scene1->AddModel(
+		sun, sizeof(sun) / (sizeof(float) * LAYOUT_POS_COLOR_NORMAL.floatsPerVertex),
+		LAYOUT_POS_COLOR_NORMAL);
 
 	auto sunFrame = std::make_shared<TransformationComposite>();
 	sunFrame->Add(std::make_shared<DynamicRotation>(5.0f, glm::vec3(0, 0, 1)));
@@ -142,7 +159,10 @@ void App::InitScenes()
 	sunTransform->Add(std::make_shared<Scale>(glm::vec3(0.10f, 0.10f, 0.10f)));
 	DrawableObject* sunObj = new DrawableObject(sunModel, shader1, sunTransform);
 
-	Model* earthModel = scene1->AddModel(earth, sizeof(earth) / (sizeof(float) * 9), 9);
+	Model* earthModel = scene1->AddModel(
+		earth, sizeof(earth) / (sizeof(float) * LAYOUT_POS_COLOR_NORMAL.floatsPerVertex),
+		LAYOUT_POS_COLOR_NORMAL);
+
 	auto earthFrame = std::make_shared<TransformationComposite>();
 	earthFrame->Add(sunFrame);
 	earthFrame->Add(std::make_shared<DynamicRotation>(20.0f, glm::vec3(0, 0, 1)));
@@ -154,7 +174,10 @@ void App::InitScenes()
 	earthTransform->Add(std::make_shared<Scale>(glm::vec3(0.05f, 0.05f, 0.05f)));
 	DrawableObject* earthObj = new DrawableObject(earthModel, shader1, earthTransform);
 
-	Model* moonModel = scene1->AddModel(moon, sizeof(moon) / (sizeof(float) * 9), 9);
+	Model* moonModel = scene1->AddModel(
+		moon, sizeof(moon) / (sizeof(float) * LAYOUT_POS_COLOR_NORMAL.floatsPerVertex),
+		LAYOUT_POS_COLOR_NORMAL);
+
 	auto moonFrame = std::make_shared<TransformationComposite>();
 	moonFrame->Add(earthFrame);
 	moonFrame->Add(std::make_shared<DynamicRotation>(30.0f, glm::vec3(0, 0, 1)));
@@ -175,7 +198,10 @@ void App::InitScenes()
 	// Forest scene with trees
 	Scene* scene2 = new Scene();
 	ShaderProgram* shader2 = scene2->AddShader("shaders/basic.vert", "shaders/basic.frag");
-	Model* treeModel = scene2->AddModel(tree, sizeof(tree) / (sizeof(float) * 6), 6);
+	Model* treeModel = scene2->AddModel(
+		tree, sizeof(tree) / (sizeof(float) * LAYOUT_POS_COLOR.floatsPerVertex),
+		LAYOUT_POS_COLOR);
+
 	for (int i = 0; i < 13; i++) {
 		float x = RandomFloat(-0.8f, 0.8f);	// random x position in the range -0.8 to 0.8
 		float z = RandomFloat(-0.8f, 0.8f);	// random z position in the range -0.8 to 0.8
@@ -195,12 +221,20 @@ void App::InitScenes()
 
 	scenes.push_back(scene2);
 
+	// Clock scene with a clock model
 	Scene* scene3 = new Scene();
-	ShaderProgram* shader3 = scene3->AddShader("shaders/basic.vert", "shaders/basic.frag");
+	ShaderProgram* shader3 = scene3->AddShader("shaders/clock.vert", "shaders/default.frag");
 
-	Model* clockMod = scene3->AddModel(clockModel, sizeof(clockModel) / (sizeof(float) * 9), 9);
-	
-	
+	Model* clockMod = scene3->AddModel(
+		clockModel, sizeof(clockModel) / (sizeof(float) * LAYOUT_POS_NORMAL_COLOR.floatsPerVertex),
+		LAYOUT_POS_NORMAL_COLOR);
+
+	auto clockTransform = std::make_shared<TransformationComposite>();
+	clockTransform->Add(std::make_shared<Scale>(glm::vec3(1.0f, 1.0f, 1.0f)));
+	DrawableObject* clockObj = new DrawableObject(clockMod, shader3, clockTransform);
+	scene3->AddObject(clockObj);
+	scenes.push_back(scene3);
+	clockShader = shader3;	// store the clock shader for updating the time in the Run() method
 }
 
 void App::ErrorCallback(int error, const char* description) { fputs(description, stderr); }
@@ -215,7 +249,6 @@ void App::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int
 		if (key == GLFW_KEY_1) newIndex = 0;
 		if (key == GLFW_KEY_2) newIndex = 1;
 		if (key == GLFW_KEY_3) newIndex = 2;
-		if (key == GLFW_KEY_4) newIndex = 3;
 
 		if (newIndex >= 0 && newIndex < (int)app->scenes.size())
 			app->currentSceneIndex = newIndex;

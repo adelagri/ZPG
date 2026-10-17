@@ -18,9 +18,9 @@ ShaderProgram* Scene::AddShader(const char* vertexPath, const char* fragmentPath
 	return shader;
 }
 
-Model* Scene::AddModel(const float* verticies, int vertexCount, int floatsPerVertex)
+Model* Scene::AddModel(const float* verticies, int vertexCount, const VertexLayout& layout)
 {
-	Model* model = new Model(verticies, vertexCount, floatsPerVertex);
+	Model* model = new Model(verticies, vertexCount, layout);
 	models.push_back(model);
 	return model;
 }

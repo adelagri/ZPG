@@ -20,6 +20,7 @@
 #include <vector>
 #include <cstdlib>
 
+#include "Model.h"
 #include "Scene.h"
 
 #include "triangle.h"
@@ -47,6 +48,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
+#include <ctime>
+#include <cmath>
 
 class App
 {
@@ -87,5 +90,6 @@ private:
 	glm::mat4 View;
 	glm::mat4 ModelMatrix;
 
+	ShaderProgram* clockShader;
 };
 

@@ -17,7 +17,7 @@ public:
 
 	void AddObject(DrawableObject* object);
 	ShaderProgram* AddShader(const char* vertexPath, const char* fragmentPath);
-	Model* AddModel(const float* verticies, int vertexCount, int floatsPerVertex);
+	Model* AddModel(const float* verticies, int vertexCount, const VertexLayout& layout);
 
 	void Draw();
 
