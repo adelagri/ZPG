@@ -6,6 +6,7 @@
 
 #pragma once
 #include "Shader.h"
+#include "Observer.h"
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
@@ -15,17 +16,19 @@
 #include <iostream>
 
 
-class ShaderProgram
+class ShaderProgram : public Observer
 {
 public:
 	ShaderProgram(const char* vertexPath, const char* fragmentPath);
 	~ShaderProgram();
 	void Use();
 
-	void SetUniform1i(const char* name, int value);
-	void SetUniform1f(const char* name, float value);
-	void SetUniform3f(const char* name, const glm::vec3& value);
-	void SetUniformMatrix4fv(const char* name, const glm::mat4& matrix);
+	void SetUniform(const char* name, int value);
+	void SetUniform(const char* name, float value);
+	void SetUniform(const char* name, const glm::vec3& value);
+	void SetUniform(const char* name, const glm::mat4& matrix);
+
+	void Update(Camera& camera) override;	// Update the shader program with the camera's view and projection matrices
 
 private:
 	GLuint Id = 0;

@@ -14,6 +14,8 @@ out vec3 vertexColor;
 out vec3 vertexNormal;
 
 uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
 
 uniform float hourAngle;
 uniform float minuteAngle;
@@ -28,7 +30,7 @@ vec3 rotateZ(vec3 p, float a)
 
 bool sameColor(vec3 a, vec3 b)
 {
-    return distance(a, b) == 0;
+    return distance(a, b) < 0.1;
 }
 
 void main()
@@ -65,6 +67,6 @@ void main()
     }
 
     vertexColor = newColor;
-
-    gl_Position = modelMatrix * vec4(pos, 1.0);
+    vertexNormal = normal;
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(pos, 1.0);
 }

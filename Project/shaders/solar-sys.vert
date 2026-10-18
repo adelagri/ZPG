@@ -14,11 +14,13 @@ out vec3 vertexColor;
 out vec3 vertexNormal;
 
 uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
 
 void main()
 {
     vertexColor = color;
     vertexNormal = normal;
 
-    gl_Position = modelMatrix * vec4(position, 1.0);
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
 }

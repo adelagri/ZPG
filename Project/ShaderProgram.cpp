@@ -5,6 +5,7 @@
 */
 
 #include "ShaderProgram.h"
+#include "Camera.h"
 
 ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath)
 {
@@ -44,7 +45,7 @@ void ShaderProgram::Use()
 	glUseProgram(Id);
 }
 
-void ShaderProgram::SetUniform1i(const char* name, int value)
+void ShaderProgram::SetUniform(const char* name, int value)
 {
 	GLint location = glGetUniformLocation(Id, name);
 	if (location == -1)
@@ -55,7 +56,7 @@ void ShaderProgram::SetUniform1i(const char* name, int value)
 	glUniform1i(location, value);
 }
 
-void ShaderProgram::SetUniform1f(const char* name, float value)
+void ShaderProgram::SetUniform(const char* name, float value)
 {
 	GLint location = glGetUniformLocation(Id, name);
 	if (location == -1)
@@ -66,7 +67,7 @@ void ShaderProgram::SetUniform1f(const char* name, float value)
 	glUniform1f(location, value);
 }
 
-void ShaderProgram::SetUniform3f(const char* name, const glm::vec3& value)
+void ShaderProgram::SetUniform(const char* name, const glm::vec3& value)
 {
 	GLint location = glGetUniformLocation(Id, name);
 	if (location == -1)
@@ -77,7 +78,7 @@ void ShaderProgram::SetUniform3f(const char* name, const glm::vec3& value)
 	glUniform3f(location, value.x, value.y, value.z);
 }
 
-void ShaderProgram::SetUniformMatrix4fv(const char* name, const glm::mat4& matrix)
+void ShaderProgram::SetUniform(const char* name, const glm::mat4& matrix)
 {
 	GLint location = glGetUniformLocation(Id, name);
 	if (location == -1)
@@ -86,4 +87,11 @@ void ShaderProgram::SetUniformMatrix4fv(const char* name, const glm::mat4& matri
 		exit(-1);
 	}
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+void ShaderProgram::Update(Camera& camera)
+{
+	Use();	// Use the shader program before setting uniforms
+	SetUniform("viewMatrix", camera.GetViewMatrix());
+	SetUniform("projectionMatrix", camera.GetProjectionMatrix());
 }

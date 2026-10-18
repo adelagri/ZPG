@@ -18,8 +18,8 @@ App::App()
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
 
-	Window = glfwCreateWindow(1200, 1000, "ZPG", NULL, NULL);	// create a window and its OpenGL context
-	if (!Window)
+	window = glfwCreateWindow(1200, 1000, "ZPG", NULL, NULL);	// create a window and its OpenGL context
+	if (!window)
 	{
 		glfwTerminate();
 		exit(EXIT_FAILURE);
@@ -28,7 +28,7 @@ App::App()
 	// make the window's context current
 	// this is necessary before calling any OpenGL functions, otherwise they will not work
 	// needs to be called before glfwGetProcAddress - requires a current context to work
-	glfwMakeContextCurrent(Window);
+	glfwMakeContextCurrent(window);
 
 	// Set the swap interval to 1
 	// the screen will be updated at the same rate as the monitor's refresh rate
@@ -38,42 +38,28 @@ App::App()
 	if (!gladLoadGL((GLADloadfunc)glfwGetProcAddress))	// glfwGetProcAddress returns the address of the specified OpenGL function, which is then passed to gladLoadGL to load the function pointers
 	{
 		printf("GLAD initialization failed\n");
-		glfwDestroyWindow(Window);
+		glfwDestroyWindow(window);
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
 
-	glfwSetWindowUserPointer(Window, this);	// set the user pointer for the window to this instance of the App class, so we can access it in the callbacks
+	glfwSetWindowUserPointer(window, this);	// set the user pointer for the window to this instance of the App class, so we can access it in the callbacks
 
 	// Sets the key callback
-	glfwSetKeyCallback(Window, KeyCallback);
-	glfwSetCursorPosCallback(Window, CursorCallback);
-	glfwSetMouseButtonCallback(Window, ButtonCallback);
-	glfwSetWindowFocusCallback(Window, WindowFocusCallback);
-	glfwSetWindowIconifyCallback(Window, WindowIconifyCallback);
-	glfwSetWindowSizeCallback(Window, WindowSizeCallback);
+	glfwSetKeyCallback(window, KeyCallback);
+	glfwSetCursorPosCallback(window, CursorCallback);
+	glfwSetMouseButtonCallback(window, ButtonCallback);
+	glfwSetWindowFocusCallback(window, WindowFocusCallback);
+	glfwSetWindowIconifyCallback(window, WindowIconifyCallback);
+	glfwSetWindowSizeCallback(window, WindowSizeCallback);
+	glfwGetFramebufferSize(window, &width, &height);
 
-	glfwGetFramebufferSize(Window, &Width, &Height);
-	Ratio = Width / (float)Height;
-	glViewport(0, 0, Width, Height);
+	camera.SetRatio(width / (float)height);
 
+	glViewport(0, 0, width, height);
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(-Ratio, Ratio, -1.f, 1.f, 1.f, -1.f);
-
-	// Projection matrix : 45� Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	Projection = glm::perspective(45.0f, 4.0f / 3.0f, 0.01f, 100.0f);
-
-	// Camera matrix
-	View = glm::lookAt(
-		glm::vec3(10, 10, 10), // Camera is at (4,3,-3), in World Space
-		glm::vec3(0, 0, 0), // and looks at the origin
-		glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
-	);
 	// Model matrix : an identity matrix (model will be at the origin)
 	ModelMatrix = glm::mat4(1.0f);
-
 
 	glEnable(GL_DEPTH_TEST);//Do depth comparisons and update the depth buffer.
 }
@@ -84,7 +70,7 @@ App::~App()
 		delete s;
 	}
 
-	glfwDestroyWindow(Window);
+	glfwDestroyWindow(window);
 	glfwTerminate();
 }
 
@@ -103,38 +89,57 @@ void App::Run()
 {
 	InitScenes();
 
-	const float TWO_PI = 6.2831853f;
+	double lastTime = glfwGetTime();
 
-	while (!glfwWindowShouldClose(Window))
+	while (!glfwWindowShouldClose(window))
 	{
+		double now = glfwGetTime();
+		auto deltaTime = static_cast<float>(now - lastTime);
+		lastTime = now;
+
 		Scene* currentScene = scenes[currentSceneIndex];
 
-		time_t now = time(nullptr);
+		float forward = 0.0f, right = 0.0f;
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) forward += 1.0f;
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) forward -= 1.0f;
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) right += 1.0f;
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) right -= 1.0f;
+
+		const float speed = 3.0f;	// camera movement speed
+
+		camera.Move(forward * speed * deltaTime, right * speed * deltaTime);
+
+		time_t now_c = time(nullptr); // get the current time in seconds
 		tm local;
-		localtime_s(&local, &now);        // MSVC verze (localtime hlásí varování)
+		localtime_s(&local, &now_c);	// convert the time to local time and store it in a tm struct
 
 		if (currentSceneIndex == 2) {
-
-			float sec = (float)local.tm_sec;
-			float min = local.tm_min + sec / 60.0f;
-			float hour = (local.tm_hour % 12) + min / 60.0f;
-
-			float secondAngle = -TWO_PI * sec / 60.0f;
-			float minuteAngle = -TWO_PI * min / 60.0f;
-			float hourAngle = -TWO_PI * hour / 12.0f;
-
-			clockShader->Use();
-			clockShader->SetUniform1f("secondAngle", secondAngle);
-			clockShader->SetUniform1f("minuteAngle", minuteAngle);
-			clockShader->SetUniform1f("hourAngle", hourAngle);
+			glClearColor(0.5f, 0.8f, 1.0f, 1.0f);
+		}
+		else {
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		}
 
+		float sec = (float)local.tm_sec;
+		float min = local.tm_min + sec / 60.0f;
+		float hour = (local.tm_hour % 12) + min / 60.0f;
+
+		// convert the time to angles in radians for the clock hands
+		float secondAngle = -glm::radians(sec * 6.0f);	// 360° / 60 = 6 degrees per second
+		float minuteAngle = -glm::radians(min * 6.0f);	// 360° / 60 = 6
+		float hourAngle = -glm::radians(hour * 30.0f);	// 360° / 12 = 30
+
+		clockShader->Use();
+		clockShader->SetUniform("secondAngle", secondAngle);
+		clockShader->SetUniform("minuteAngle", minuteAngle);
+		clockShader->SetUniform("hourAngle", hourAngle);
+		
 		// Clear color and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		currentScene->Draw();
 
 		// Display the rendered frame and process events
-		glfwSwapBuffers(Window); // back buffer becomes front buffer and is displayed on the screen, front buffer becomes back buffer and is used for rendering the next frame
+		glfwSwapBuffers(window); // back buffer becomes front buffer and is displayed on the screen, front buffer becomes back buffer and is used for rendering the next frame
 		glfwPollEvents();	// process events, call callbacks (applies for the next frame)
 	}
 }
@@ -144,6 +149,7 @@ void App::InitScenes()
 	// Solar system scene with the sun, earth and moon
 	Scene* scene1 = new Scene();
 	ShaderProgram* shader1 = scene1->AddShader("shaders/solar-sys.vert", "shaders/default.frag");
+	camera.Attach(shader1);
 
 	Model* sunModel = scene1->AddModel(
 		sun, sizeof(sun) / (sizeof(float) * LAYOUT_POS_COLOR_NORMAL.floatsPerVertex),
@@ -194,47 +200,116 @@ void App::InitScenes()
 	scene1->AddObject(moonObj);
 	scenes.push_back(scene1);
 
-	
-	// Forest scene with trees
-	Scene* scene2 = new Scene();
-	ShaderProgram* shader2 = scene2->AddShader("shaders/basic.vert", "shaders/basic.frag");
-	Model* treeModel = scene2->AddModel(
-		tree, sizeof(tree) / (sizeof(float) * LAYOUT_POS_COLOR.floatsPerVertex),
-		LAYOUT_POS_COLOR);
-
-	for (int i = 0; i < 13; i++) {
-		float x = RandomFloat(-0.8f, 0.8f);	// random x position in the range -0.8 to 0.8
-		float z = RandomFloat(-0.8f, 0.8f);	// random z position in the range -0.8 to 0.8
-
-		float angle = RandomFloat(0.0f, 6.28f);	// 0 to 2*PI radians
-		float scale = RandomFloat(0.05f, 0.08f);	// random scale in the range 0.05 to 0.08
-
-		auto treeTransform = std::make_shared<TransformationComposite>();
-		treeTransform->Add(std::make_shared<Translation>(glm::vec3(x, 0.0f, z)));
-		treeTransform->Add(std::make_shared<Rotation>(angle, glm::vec3(0, 1, 0)));
-		treeTransform->Add(std::make_shared<Scale>(glm::vec3(scale, scale, scale)));
-
-		DrawableObject* treeObj = new DrawableObject(treeModel, shader2, treeTransform);
-
-		scene2->AddObject(treeObj);
-	}
-
-	scenes.push_back(scene2);
-
 	// Clock scene with a clock model
-	Scene* scene3 = new Scene();
-	ShaderProgram* shader3 = scene3->AddShader("shaders/clock.vert", "shaders/default.frag");
+	Scene* scene2 = new Scene();
+	ShaderProgram* clockShader = scene2->AddShader("shaders/clock.vert", "shaders/default.frag");
+	camera.Attach(clockShader);
 
-	Model* clockMod = scene3->AddModel(
+	Model* clockMod = scene2->AddModel(
 		clockModel, sizeof(clockModel) / (sizeof(float) * LAYOUT_POS_NORMAL_COLOR.floatsPerVertex),
 		LAYOUT_POS_NORMAL_COLOR);
 
 	auto clockTransform = std::make_shared<TransformationComposite>();
-	clockTransform->Add(std::make_shared<Scale>(glm::vec3(1.0f, 1.0f, 1.0f)));
-	DrawableObject* clockObj = new DrawableObject(clockMod, shader3, clockTransform);
-	scene3->AddObject(clockObj);
+	clockTransform->Add(std::make_shared<Scale>(glm::vec3(-1.0f, 1.0f, 1.0f)));
+	DrawableObject* clockObj1 = new DrawableObject(clockMod, clockShader, clockTransform);
+	scene2->AddObject(clockObj1);
+	scenes.push_back(scene2);
+
+	
+	// Forest scene with trees and bushes
+	Scene* scene3 = new Scene();
+
+	ShaderProgram* shaderTree = scene3->AddShader("shaders/tree.vert", "shaders/tree.frag");
+	ShaderProgram* shaderBush = scene3->AddShader("shaders/bush.vert", "shaders/bush.frag");
+	ShaderProgram* shaderGround = scene3->AddShader("shaders/basic.vert", "shaders/basic.frag");
+	ShaderProgram* shaderLogin = scene3->AddShader("shaders/login.vert", "shaders/default.frag");
+
+	camera.Attach(shaderTree);
+	camera.Attach(shaderBush);
+	camera.Attach(shaderGround);
+	camera.Attach(shaderLogin);
+
+	Model* treeModel = scene3->AddModel(
+		tree, sizeof(tree) / (sizeof(float) * LAYOUT_POS_NORMAL.floatsPerVertex),
+		LAYOUT_POS_NORMAL);
+
+	Model* bushModel = scene3->AddModel(
+		bushes, sizeof(bushes) / (sizeof(float) * LAYOUT_POS_NORMAL.floatsPerVertex),
+		LAYOUT_POS_NORMAL);
+
+	Model* groundModel = scene3->AddModel(
+		ground, sizeof(ground) / (sizeof(float) * LAYOUT_POS_COLOR.floatsPerVertex),
+		LAYOUT_POS_COLOR);
+
+	Model* loginModel = scene3->AddModel(
+		login, sizeof(login) / (sizeof(float) * LAYOUT_POS_NORMAL.floatsPerVertex),
+		LAYOUT_POS_NORMAL);
+
+	for (int i = 0; i < 74; i++) {
+		float x = RandomFloat(-30.0f, 30.0f);
+		float z = RandomFloat(-0.8f, 20.0f);
+
+		float angle = RandomFloat(0.0f, 359.0f);	// random rotation angle in degrees
+		float scale = RandomFloat(0.5f, 1.2f);
+
+		auto treeTransform = std::make_shared<TransformationComposite>();
+		treeTransform->Add(std::make_shared<Translation>(glm::vec3(x, 0.0f, z)));
+		treeTransform->Add(std::make_shared<Rotation>(angle, glm::vec3(0, 1, 0)));
+		treeTransform->Add(std::make_shared<Scale>(glm::vec3(scale)));
+
+		DrawableObject* treeObj = new DrawableObject(treeModel, shaderTree, treeTransform);
+
+		scene3->AddObject(treeObj);
+	}
+
+	for (int i = 0; i < 60; i++) {
+		float x = RandomFloat(-30.0f, 30.0f);
+		float z = RandomFloat(-0.8f, 20.0f);
+
+		float angle = RandomFloat(0.0f, 359.0f);	// random rotation angle in degrees
+		float scale = RandomFloat(0.8f, 2.0f);
+
+		auto bushTransform = std::make_shared<TransformationComposite>();
+		bushTransform->Add(std::make_shared<Translation>(glm::vec3(x, 0.0f, z)));
+		bushTransform->Add(std::make_shared<Rotation>(angle, glm::vec3(0, 1, 0)));
+		bushTransform->Add(std::make_shared<Scale>(glm::vec3(scale)));
+
+		DrawableObject* bushObj = new DrawableObject(bushModel, shaderBush, bushTransform);
+
+		scene3->AddObject(bushObj);
+	}
+
+	auto groundTransform = std::make_shared<TransformationComposite>();
+	groundTransform->Add(std::make_shared<Translation>(glm::vec3(0.0f, 0.0f, 0.0f)));
+	groundTransform->Add(std::make_shared<Rotation>(90.0f, glm::vec3(1, 0, 0))); // rotate the ground to be horizontal
+	groundTransform->Add(std::make_shared<Scale>(glm::vec3(60.0f)));
+
+	DrawableObject* groundObj = new DrawableObject(groundModel, shaderGround, groundTransform);
+	scene3->AddObject(groundObj);
+
+	auto loginTransform = std::make_shared<TransformationComposite>();
+	loginTransform->Add(std::make_shared<Translation>(glm::vec3(0.0f, 1.0f, -5.0f)));
+	loginTransform->Add(std::make_shared<Scale>(glm::vec3(1.0f)));
+
+	DrawableObject* loginObj = new DrawableObject(loginModel, shaderLogin, loginTransform);
+	scene3->AddObject(loginObj);
+
+
+	// Add the clock model to the forest scene with different transformations
+	auto clockTransform2 = std::make_shared<TransformationComposite>();
+	clockTransform2->Add(std::make_shared<Translation>(glm::vec3(2.0f, 3.0f, -1.0f)));
+	clockTransform2->Add(std::make_shared<Scale>(glm::vec3(-0.5f, 0.5f, 0.5f)));
+	scene3->AddObject(new DrawableObject(clockMod, clockShader, clockTransform2));
+
+	auto clockTransform3 = std::make_shared<TransformationComposite>();
+	clockTransform3->Add(std::make_shared<Translation>(glm::vec3(-2.0f, 3.0f, 2.0f)));
+	clockTransform3->Add(std::make_shared<Rotation>(60.0f, glm::vec3(0, 1, 0)));
+	clockTransform3->Add(std::make_shared<Scale>(glm::vec3(-0.5f, 0.5f, 0.5f)));
+	scene3->AddObject(new DrawableObject(clockMod, clockShader, clockTransform3));
+
 	scenes.push_back(scene3);
-	clockShader = shader3;	// store the clock shader for updating the time in the Run() method
+
+	this->clockShader = clockShader;	// store the clock shader for updating the clock hands in the main loop
 }
 
 void App::ErrorCallback(int error, const char* description) { fputs(description, stderr); }
@@ -265,11 +340,48 @@ void App::WindowIconifyCallback(GLFWwindow* window, int iconified) { printf("win
 
 void App::WindowSizeCallback(GLFWwindow* window, int width, int height) {
 	printf("resize %d, %d \n", width, height);
-	glViewport(0, 0, width, height);
+	App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+	app->OnResize(width, height);
 }
 
-void App::CursorCallback(GLFWwindow* window, double x, double y) { printf("cursor_callback \n"); }
+void App::CursorCallback(GLFWwindow* window, double x, double y) 
+{
+	App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+	app->OnCursor(x, y);
+}
 
 void App::ButtonCallback(GLFWwindow* window, int button, int action, int mode) {
-	if (action == GLFW_PRESS) printf("button_callback [%d,%d,%d]\n", button, action, mode);
+	App* app = static_cast<App*>(glfwGetWindowUserPointer(window));
+	app->OnMouse(button, action);
+}
+
+void App::OnResize(int width, int height)
+{
+	width = width;
+	height = height;
+	camera.SetRatio((float)width / (float)height);
+	glViewport(0, 0, width, height);
+
+}
+
+void App::OnMouse(int button, int action)
+{
+	if (button != GLFW_MOUSE_BUTTON_RIGHT) return;
+	looking = (action == GLFW_PRESS);
+	if (looking) {
+		glfwGetCursorPos(window, &lastX, &lastY);
+	}
+}
+
+void App::OnCursor(double x, double y)
+{
+	if (!looking) return;
+
+	const float sensitivity = 0.1f;
+	auto dx = static_cast<float>(x - lastX);
+	auto dy = static_cast<float>(y - lastY);
+	lastX = x;
+	lastY = y;
+
+	camera.Rotate(dx * sensitivity, -dy * sensitivity);
 }

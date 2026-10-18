@@ -16,6 +16,6 @@ DrawableObject::DrawableObject(Model* model, ShaderProgram* shader, std::shared_
 void DrawableObject::Draw()
 {
 	shader->Use();
-	shader->SetUniformMatrix4fv("modelMatrix", transformation->GetMatrix());	// Set the model matrix uniform in the shader
+	shader->SetUniform("modelMatrix", transformation->GetMatrix());	// Set the model matrix uniform in the shader
 	model->Draw();
 }

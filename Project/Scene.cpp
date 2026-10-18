@@ -6,6 +6,7 @@
 
 #include "Scene.h"
 
+
 void Scene::AddObject(DrawableObject* object)
 {
 	objects.push_back(object);

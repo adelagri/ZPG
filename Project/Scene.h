@@ -9,6 +9,7 @@
 #include "DrawableObject.h"
 #include "ShaderProgram.h"
 #include "Model.h"
+#include "Camera.h"
 
 class Scene
 {

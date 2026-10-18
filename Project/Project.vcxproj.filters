@@ -48,6 +48,12 @@
     <ClCompile Include="glad.cpp">
       <Filter>Zdrojové soubory</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Observer.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Models\bushes.h">
@@ -110,6 +116,18 @@
     <ClInclude Include="Models\clock.h">
       <Filter>Models</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Models\ground.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Models\login.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Observer.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basic.frag">
@@ -125,6 +143,21 @@
       <Filter>shaders</Filter>
     </None>
     <None Include="shaders\default.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\tree.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\tree.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\bush.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\bush.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\login.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

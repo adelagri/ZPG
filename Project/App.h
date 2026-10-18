@@ -22,7 +22,9 @@
 
 #include "Model.h"
 #include "Scene.h"
+#include "Camera.h"
 
+#include "login.h"
 #include "triangle.h"
 #include "square.h"
 #include "bushes.h"
@@ -36,6 +38,7 @@
 #include "sun.h"
 #include "moon.h"
 #include "clock.h"
+#include "ground.h"
 
 //Include GLM  
 #include <glm/vec3.hpp> // glm::vec3
@@ -61,22 +64,22 @@ public:
 	void Run();
 
 private:
-	GLFWwindow* Window;
-	int Width, Height;
-	float Ratio;
+	GLFWwindow* window;
+	int width = 1280, height = 960;
 
-	glm::vec3 eye{ 0.0f, 3.0f, 10.0f };   // poloha kamery
-	glm::vec3 target{ 0.0f, 0.0f, -1.0f }; // směr pohledu
-	glm::vec3 up{ 0.0f, 1.0f, 0.0f };
-	float alpha = 1.5708f;    // úhel od osy Y (π/2 = vodorovně)
-	float fi = -1.5708f;      // úhel v rovině XZ (-π/2 = pohled podél -Z)
-	double lastX = 0, lastY = 0;
-	bool firstMouse = true;
+	Camera camera{ glm::vec3(0, 1.8, 3), glm::vec3(0, 0, 0)};
+
+	bool looking = false;	// whether the user is currently looking around with the mouse
+	double lastX = 0, lastY = 0;	// last mouse position
 
 	std::vector<Scene*> scenes;
 	int currentSceneIndex = 0;
 
 	void InitScenes();
+
+	void OnResize(int width, int height);
+	void OnMouse(int button, int action);
+	void OnCursor(double x, double y);
 
 	static void ErrorCallback(int error, const char* description);
 	static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
