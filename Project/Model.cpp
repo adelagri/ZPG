@@ -23,19 +23,12 @@ Model::Model(const float* verticies, int vertexCount, const VertexLayout& layout
 
 	const GLsizei stride = layout.floatsPerVertex * sizeof(float);
 
-	glEnableVertexAttribArray(0);	// enable the vertex attribute array for position
-	// index, number of components, data type, normalized, vertex stride, offset
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(layout.positionOffset * sizeof(float)));	// VBO is bound, so VAO knows where to find the vertex data and we can set the vertex attribute pointers
-
-
-	if (layout.colorOffset > 0) {
-		glEnableVertexAttribArray(1);	// enable the vertex attribute array for color
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(layout.colorOffset * sizeof(float)));
+	SetAttribute(ATTR_POSITION, layout.positionOffset, stride);	// position attribute is always present
+	if (layout.colorOffset >= 0) {
+		SetAttribute(ATTR_COLOR, layout.colorOffset, stride);	// color attribute is optional
 	}
-
-	if (layout.normalOffset > 0) {
-		glEnableVertexAttribArray(2);	// enable the vertex attribute array for normal
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(layout.normalOffset * sizeof(float)));
+	if (layout.normalOffset >= 0) {
+		SetAttribute(ATTR_NORMAL, layout.normalOffset, stride);	// normal attribute is optional
 	}
 }
 
@@ -43,6 +36,12 @@ Model::~Model()
 {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+}
+
+void Model::SetAttribute(GLuint index, int offset, GLsizei stride)	// set the vertex attribute pointer
+{
+	glEnableVertexAttribArray(index);
+	glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, stride, (GLvoid*)(offset * sizeof(float)));
 }
 
 void Model::Draw()

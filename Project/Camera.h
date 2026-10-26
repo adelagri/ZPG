@@ -18,11 +18,12 @@ public:
 
 	glm::mat4 GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;
+	glm::vec3 GetEye() const;
 
 	void Move(float forward, float right);
 	void Rotate(float deltaYaw, float deltaPitch);
 	void SetRatio(float r);
-	void Attach(Observer* observer);
+	void Attach(Observer* observer);	// Attach an observer to the camera
 
 private:
 	void UpdateFront(); // Update the target vector based on the current rotation angles

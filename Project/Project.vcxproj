@@ -129,19 +129,27 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DrawableObject.cpp" />
+    <ClCompile Include="ForestScene.cpp" />
     <ClCompile Include="glad.cpp" />
+    <ClCompile Include="ILightObserver.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Observer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="SolarSystemScene.cpp" />
+    <ClCompile Include="SphereScene.cpp" />
     <ClCompile Include="Transformation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DrawableObject.h" />
+    <ClInclude Include="ForestScene.h" />
+    <ClInclude Include="ILightObserver.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Models\bushes.h" />
     <ClInclude Include="Models\clock.h" />
@@ -151,6 +159,8 @@
     <ClInclude Include="Models\login.h" />
     <ClInclude Include="Models\moon.h" />
     <ClInclude Include="Models\plain.h" />
+    <ClInclude Include="Models\rocket.h" />
+    <ClInclude Include="Models\solar_panel.h" />
     <ClInclude Include="Models\sphere.h" />
     <ClInclude Include="Models\sun.h" />
     <ClInclude Include="Models\suzi_flat.h" />
@@ -161,8 +171,11 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="SolarSystemScene.h" />
+    <ClInclude Include="SphereScene.h" />
     <ClInclude Include="square.h" />
     <ClInclude Include="Transformation.h" />
+    <ClInclude Include="VertexAttributes.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basic.frag" />
@@ -171,7 +184,20 @@
     <None Include="shaders\bush.vert" />
     <None Include="shaders\clock.vert" />
     <None Include="shaders\default.frag" />
+    <None Include="shaders\light\blinn.frag" />
+    <None Include="shaders\light\blinn.vert" />
+    <None Include="shaders\light\constant.frag" />
+    <None Include="shaders\light\constant.vert" />
+    <None Include="shaders\light\lambert.frag" />
+    <None Include="shaders\light\lambert.vert" />
+    <None Include="shaders\light\phong.frag" />
+    <None Include="shaders\light\phong.vert" />
+    <None Include="shaders\light\planet.frag" />
+    <None Include="shaders\light\planet.vert" />
+    <None Include="shaders\light\sun.frag" />
+    <None Include="shaders\light\sun.vert" />
     <None Include="shaders\login.vert" />
+    <None Include="shaders\light.vert" />
     <None Include="shaders\solar-sys.vert" />
     <None Include="shaders\tree.frag" />
     <None Include="shaders\tree.vert" />

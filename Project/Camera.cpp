@@ -9,8 +9,8 @@
 Camera::Camera(glm::vec3 eye, glm::vec3 center, glm::vec3 up) : 
 	eye(eye), front(glm::normalize(center - eye)), up(up) 
 {
-	yaw = 280.0f;
-	pitch = -30.0f;
+	yaw = 270.0f;
+	pitch = 0.0f;
 	UpdateFront();
 }
 
@@ -22,6 +22,11 @@ glm::mat4 Camera::GetViewMatrix() const
 glm::mat4 Camera::GetProjectionMatrix() const
 {
 	return glm::perspective(fov, ratio, zNear, zFar);
+}
+
+glm::vec3 Camera::GetEye() const
+{
+	return eye;
 }
 
 void Camera::UpdateFront()

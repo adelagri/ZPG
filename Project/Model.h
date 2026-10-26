@@ -8,6 +8,7 @@
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
+#include "VertexAttributes.h"
 
 struct VertexLayout {	// describes the layout of the vertex data in the VBO
 	int floatsPerVertex;
@@ -27,6 +28,8 @@ class Model
 public:
 	Model(const float* verticies, int vertexCount, const VertexLayout& layout);
 	~Model();
+
+	void SetAttribute(GLuint index, int offset, GLsizei stride);
 
 	void Draw();
 

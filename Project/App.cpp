@@ -60,16 +60,10 @@ App::App()
 
 	// Model matrix : an identity matrix (model will be at the origin)
 	ModelMatrix = glm::mat4(1.0f);
-
-	glEnable(GL_DEPTH_TEST);//Do depth comparisons and update the depth buffer.
 }
 
 App::~App()
 {
-	for (Scene* s : scenes) {
-		delete s;
-	}
-
 	glfwDestroyWindow(window);
 	glfwTerminate();
 }
@@ -87,6 +81,8 @@ void App::GetVersionInfo()
 
 void App::Run()
 {
+	glEnable(GL_DEPTH_TEST);//Do depth comparisons and update the depth buffer.
+
 	InitScenes();
 
 	double lastTime = glfwGetTime();
@@ -97,7 +93,8 @@ void App::Run()
 		auto deltaTime = static_cast<float>(now - lastTime);
 		lastTime = now;
 
-		Scene* currentScene = scenes[currentSceneIndex];
+		Scene& currentScene = *scenes[currentSceneIndex];
+		currentScene.Update(deltaTime);
 
 		float forward = 0.0f, right = 0.0f;
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) forward += 1.0f;
@@ -109,34 +106,12 @@ void App::Run()
 
 		camera.Move(forward * speed * deltaTime, right * speed * deltaTime);
 
-		time_t now_c = time(nullptr); // get the current time in seconds
-		tm local;
-		localtime_s(&local, &now_c);	// convert the time to local time and store it in a tm struct
-
-		if (currentSceneIndex == 2) {
-			glClearColor(0.5f, 0.8f, 1.0f, 1.0f);
-		}
-		else {
-			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		}
-
-		float sec = (float)local.tm_sec;
-		float min = local.tm_min + sec / 60.0f;
-		float hour = (local.tm_hour % 12) + min / 60.0f;
-
-		// convert the time to angles in radians for the clock hands
-		float secondAngle = -glm::radians(sec * 6.0f);	// 360° / 60 = 6 degrees per second
-		float minuteAngle = -glm::radians(min * 6.0f);	// 360° / 60 = 6
-		float hourAngle = -glm::radians(hour * 30.0f);	// 360° / 12 = 30
-
-		clockShader->Use();
-		clockShader->SetUniform("secondAngle", secondAngle);
-		clockShader->SetUniform("minuteAngle", minuteAngle);
-		clockShader->SetUniform("hourAngle", hourAngle);
+		glm::vec3 c = currentScene.ClearColor();
+		glClearColor(c.r, c.g, c.b, 1.0f);
 		
 		// Clear color and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		currentScene->Draw();
+		currentScene.Draw();
 
 		// Display the rendered frame and process events
 		glfwSwapBuffers(window); // back buffer becomes front buffer and is displayed on the screen, front buffer becomes back buffer and is used for rendering the next frame
@@ -145,61 +120,12 @@ void App::Run()
 }
 
 void App::InitScenes()
-{
-	// Solar system scene with the sun, earth and moon
-	Scene* scene1 = new Scene();
-	ShaderProgram* shader1 = scene1->AddShader("shaders/solar-sys.vert", "shaders/default.frag");
-	camera.Attach(shader1);
+{	
+	scenes.push_back(std::make_unique<SolarSystemScene>(camera));
+	scenes.push_back(std::make_unique<SphereScene>(camera));
+	scenes.push_back(std::make_unique<ForestScene>(camera));
 
-	Model* sunModel = scene1->AddModel(
-		sun, sizeof(sun) / (sizeof(float) * LAYOUT_POS_COLOR_NORMAL.floatsPerVertex),
-		LAYOUT_POS_COLOR_NORMAL);
-
-	auto sunFrame = std::make_shared<TransformationComposite>();
-	sunFrame->Add(std::make_shared<DynamicRotation>(5.0f, glm::vec3(0, 0, 1)));
-	sunFrame->Add(std::make_shared<Translation>(glm::vec3(0.3f, 0.0f, 0.0f)));
-
-	auto sunTransform = std::make_shared<TransformationComposite>();
-	sunTransform->Add(sunFrame);
-	sunTransform->Add(std::make_shared<DynamicRotation>(1.5f, glm::vec3(0, 0, 1)));
-	sunTransform->Add(std::make_shared<Scale>(glm::vec3(0.10f, 0.10f, 0.10f)));
-	DrawableObject* sunObj = new DrawableObject(sunModel, shader1, sunTransform);
-
-	Model* earthModel = scene1->AddModel(
-		earth, sizeof(earth) / (sizeof(float) * LAYOUT_POS_COLOR_NORMAL.floatsPerVertex),
-		LAYOUT_POS_COLOR_NORMAL);
-
-	auto earthFrame = std::make_shared<TransformationComposite>();
-	earthFrame->Add(sunFrame);
-	earthFrame->Add(std::make_shared<DynamicRotation>(20.0f, glm::vec3(0, 0, 1)));
-	earthFrame->Add(std::make_shared<Translation>(glm::vec3(0.5f, 0.0f, 0.0f)));
-	
-	auto earthTransform = std::make_shared<TransformationComposite>();
-	earthTransform->Add(earthFrame);
-	earthTransform->Add(std::make_shared<DynamicRotation>(330.0f, glm::vec3(0, 0, 1)));
-	earthTransform->Add(std::make_shared<Scale>(glm::vec3(0.05f, 0.05f, 0.05f)));
-	DrawableObject* earthObj = new DrawableObject(earthModel, shader1, earthTransform);
-
-	Model* moonModel = scene1->AddModel(
-		moon, sizeof(moon) / (sizeof(float) * LAYOUT_POS_COLOR_NORMAL.floatsPerVertex),
-		LAYOUT_POS_COLOR_NORMAL);
-
-	auto moonFrame = std::make_shared<TransformationComposite>();
-	moonFrame->Add(earthFrame);
-	moonFrame->Add(std::make_shared<DynamicRotation>(30.0f, glm::vec3(0, 0, 1)));
-	moonFrame->Add(std::make_shared<Translation>(glm::vec3(0.125f, 0.0f, 0.0f)));
-
-	auto moonTransform = std::make_shared<TransformationComposite>();
-	moonTransform->Add(moonFrame);
-	moonTransform->Add(std::make_shared<DynamicRotation>(90.0f, glm::vec3(0, 0, 1)));
-	moonTransform->Add(std::make_shared<Scale>(glm::vec3(0.0125f, 0.0125f, 0.0125f)));
-	DrawableObject* moonObj = new DrawableObject(moonModel, shader1, moonTransform);
-
-	scene1->AddObject(sunObj);
-	scene1->AddObject(earthObj);
-	scene1->AddObject(moonObj);
-	scenes.push_back(scene1);
-
+	/*
 	// Clock scene with a clock model
 	Scene* scene2 = new Scene();
 	ShaderProgram* clockShader = scene2->AddShader("shaders/clock.vert", "shaders/default.frag");
@@ -219,15 +145,15 @@ void App::InitScenes()
 	// Forest scene with trees and bushes
 	Scene* scene3 = new Scene();
 
-	ShaderProgram* shaderTree = scene3->AddShader("shaders/tree.vert", "shaders/tree.frag");
-	ShaderProgram* shaderBush = scene3->AddShader("shaders/bush.vert", "shaders/bush.frag");
-	ShaderProgram* shaderGround = scene3->AddShader("shaders/basic.vert", "shaders/basic.frag");
-	ShaderProgram* shaderLogin = scene3->AddShader("shaders/login.vert", "shaders/default.frag");
+	ShaderProgram* treeShader = scene3->AddShader("shaders/tree.vert", "shaders/tree.frag");
+	ShaderProgram* bushShader = scene3->AddShader("shaders/bush.vert", "shaders/bush.frag");
+	ShaderProgram* groundShader = scene3->AddShader("shaders/basic.vert", "shaders/basic.frag");
+	ShaderProgram* loginShader = scene3->AddShader("shaders/login.vert", "shaders/default.frag");
 
-	camera.Attach(shaderTree);
-	camera.Attach(shaderBush);
-	camera.Attach(shaderGround);
-	camera.Attach(shaderLogin);
+	camera.Attach(treeShader);
+	camera.Attach(bushShader);
+	camera.Attach(groundShader);
+	camera.Attach(loginShader);
 
 	Model* treeModel = scene3->AddModel(
 		tree, sizeof(tree) / (sizeof(float) * LAYOUT_POS_NORMAL.floatsPerVertex),
@@ -257,7 +183,7 @@ void App::InitScenes()
 		treeTransform->Add(std::make_shared<Rotation>(angle, glm::vec3(0, 1, 0)));
 		treeTransform->Add(std::make_shared<Scale>(glm::vec3(scale)));
 
-		DrawableObject* treeObj = new DrawableObject(treeModel, shaderTree, treeTransform);
+		DrawableObject* treeObj = new DrawableObject(treeModel, treeShader, treeTransform);
 
 		scene3->AddObject(treeObj);
 	}
@@ -274,7 +200,7 @@ void App::InitScenes()
 		bushTransform->Add(std::make_shared<Rotation>(angle, glm::vec3(0, 1, 0)));
 		bushTransform->Add(std::make_shared<Scale>(glm::vec3(scale)));
 
-		DrawableObject* bushObj = new DrawableObject(bushModel, shaderBush, bushTransform);
+		DrawableObject* bushObj = new DrawableObject(bushModel, bushShader, bushTransform);
 
 		scene3->AddObject(bushObj);
 	}
@@ -284,14 +210,14 @@ void App::InitScenes()
 	groundTransform->Add(std::make_shared<Rotation>(90.0f, glm::vec3(1, 0, 0))); // rotate the ground to be horizontal
 	groundTransform->Add(std::make_shared<Scale>(glm::vec3(60.0f)));
 
-	DrawableObject* groundObj = new DrawableObject(groundModel, shaderGround, groundTransform);
+	DrawableObject* groundObj = new DrawableObject(groundModel, groundShader, groundTransform);
 	scene3->AddObject(groundObj);
 
 	auto loginTransform = std::make_shared<TransformationComposite>();
 	loginTransform->Add(std::make_shared<Translation>(glm::vec3(0.0f, 1.0f, -5.0f)));
 	loginTransform->Add(std::make_shared<Scale>(glm::vec3(1.0f)));
 
-	DrawableObject* loginObj = new DrawableObject(loginModel, shaderLogin, loginTransform);
+	DrawableObject* loginObj = new DrawableObject(loginModel, loginShader, loginTransform);
 	scene3->AddObject(loginObj);
 
 
@@ -310,6 +236,9 @@ void App::InitScenes()
 	scenes.push_back(scene3);
 
 	this->clockShader = clockShader;	// store the clock shader for updating the clock hands in the main loop
+	*/
+
+	// Sphere scene with light shader used
 }
 
 void App::ErrorCallback(int error, const char* description) { fputs(description, stderr); }
@@ -324,6 +253,7 @@ void App::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int
 		if (key == GLFW_KEY_1) newIndex = 0;
 		if (key == GLFW_KEY_2) newIndex = 1;
 		if (key == GLFW_KEY_3) newIndex = 2;
+		if (key == GLFW_KEY_4) newIndex = 3;
 
 		if (newIndex >= 0 && newIndex < (int)app->scenes.size())
 			app->currentSceneIndex = newIndex;
@@ -357,8 +287,8 @@ void App::ButtonCallback(GLFWwindow* window, int button, int action, int mode) {
 
 void App::OnResize(int width, int height)
 {
-	width = width;
-	height = height;
+	this->width = width;
+	this->height = height;
 	camera.SetRatio((float)width / (float)height);
 	glViewport(0, 0, width, height);
 

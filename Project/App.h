@@ -23,6 +23,9 @@
 #include "Model.h"
 #include "Scene.h"
 #include "Camera.h"
+#include "SolarSystemScene.h"
+#include "SphereScene.h"
+#include "ForestScene.h"
 
 #include "login.h"
 #include "triangle.h"
@@ -39,6 +42,8 @@
 #include "moon.h"
 #include "clock.h"
 #include "ground.h"
+#include "solar_panel.h"
+#include "rocket.h"
 
 //Include GLM  
 #include <glm/vec3.hpp> // glm::vec3
@@ -67,12 +72,12 @@ private:
 	GLFWwindow* window;
 	int width = 1280, height = 960;
 
-	Camera camera{ glm::vec3(0, 1.8, 3), glm::vec3(0, 0, 0)};
+	Camera camera{ glm::vec3(0, 0, 5), glm::vec3(0, 0, 0)};
 
 	bool looking = false;	// whether the user is currently looking around with the mouse
 	double lastX = 0, lastY = 0;	// last mouse position
 
-	std::vector<Scene*> scenes;
+	std::vector<std::unique_ptr<Scene>> scenes;
 	int currentSceneIndex = 0;
 
 	void InitScenes();
@@ -92,7 +97,5 @@ private:
 	glm::mat4 Projection;
 	glm::mat4 View;
 	glm::mat4 ModelMatrix;
-
-	ShaderProgram* clockShader;
 };
 

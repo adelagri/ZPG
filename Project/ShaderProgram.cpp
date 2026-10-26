@@ -16,6 +16,10 @@ ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath)
 	glAttachShader(Id, FragmentShader->GetID());
 	glAttachShader(Id, VertexShader->GetID());
 
+	glBindAttribLocation(Id, ATTR_POSITION, "position");
+	glBindAttribLocation(Id, ATTR_COLOR, "color");
+	glBindAttribLocation(Id, ATTR_NORMAL, "normal");
+
 	glLinkProgram(Id);
 
 	GLint success;
@@ -45,6 +49,12 @@ void ShaderProgram::Use()
 	glUseProgram(Id);
 }
 
+void ShaderProgram::OnLightChanged(const Light& l)
+{
+	Use();
+	SetUniform("lightPosition", l.GetPosition(), false);
+}
+
 void ShaderProgram::SetUniform(const char* name, int value)
 {
 	GLint location = glGetUniformLocation(Id, name);
@@ -67,10 +77,10 @@ void ShaderProgram::SetUniform(const char* name, float value)
 	glUniform1f(location, value);
 }
 
-void ShaderProgram::SetUniform(const char* name, const glm::vec3& value)
+void ShaderProgram::SetUniform(const char* name, const glm::vec3& value, bool required)
 {
 	GLint location = glGetUniformLocation(Id, name);
-	if (location == -1)
+	if (location == -1 && required)
 	{
 		std::cerr << "Error: uniform '" << name << "' not found in shader program." << std::endl;
 		exit(-1);
@@ -94,4 +104,5 @@ void ShaderProgram::Update(Camera& camera)
 	Use();	// Use the shader program before setting uniforms
 	SetUniform("viewMatrix", camera.GetViewMatrix());
 	SetUniform("projectionMatrix", camera.GetProjectionMatrix());
+	SetUniform("cameraPosition", camera.GetEye(), false);
 }

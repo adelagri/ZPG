@@ -5,63 +5,41 @@
 */
 
 #include "Scene.h"
+#include "login.h"
 
-
-void Scene::AddObject(DrawableObject* object)
+glm::vec3 Scene::ClearColor() const
 {
-	objects.push_back(object);
+	return {0, 0, 0};
 }
 
-ShaderProgram* Scene::AddShader(const char* vertexPath, const char* fragmentPath)
+void Scene::Draw()
 {
-	ShaderProgram* shader = new ShaderProgram(vertexPath, fragmentPath);
-	shaders.push_back(shader);
-	return shader;
-}
-
-Model* Scene::AddModel(const float* verticies, int vertexCount, const VertexLayout& layout)
-{
-	Model* model = new Model(verticies, vertexCount, layout);
-	models.push_back(model);
-	return model;
-}
-
-void Scene::Draw()	// Draws all objects in the scene
-{
-	for (DrawableObject* obj : objects)
-	{
-		obj->Draw();
+	for (auto& object : objects) {
+		object->Draw();
 	}
 }
 
-DrawableObject* Scene::GetSelectedObject()	// Returns the currently selected object in the scene
+ShaderProgram* Scene::AddShaderProgram(const char* vert, const char* frag)
 {
-	if (objects.empty()) return nullptr;
-
-	return objects[selectedObjIndex];
+    shaderPrograms.push_back(std::make_unique<ShaderProgram>(vert, frag));
+    ShaderProgram* shader = shaderPrograms.back().get();
+    camera.Attach(shader);
+    return shader;
 }
 
-void Scene::SelectNextObject()	// Selects the next object in the scene
+DrawableObject* Scene::AddObject(Model* model, ShaderProgram* shader, std::shared_ptr<Transformation> transformation)
 {
-	if (objects.empty()) return;
-
-	selectedObjIndex = (selectedObjIndex + 1) % objects.size();
+    objects.push_back(std::make_unique<DrawableObject>(model, shader, transformation));
+    return objects.back().get();
 }
 
-Scene::~Scene()	// Destructor - deletes all objects, shaders, and models in the scene
+void Scene::AddLogin(glm::vec3 position, float scale)
 {
-	for (DrawableObject* obj : objects)
-	{
-		delete obj;
-	}
-	for (ShaderProgram* shader : shaders)
-	{
-		delete shader;
-	}
-	for (Model* model : models)
-	{
-		delete model;
-	}
+    ShaderProgram* shader = AddShaderProgram("shaders/login.vert", "shaders/default.frag");
+    Model* model = AddModel(login, LAYOUT_POS_NORMAL);
+
+    auto t = std::make_shared<TransformationComposite>();
+    t->Add(std::make_shared<Translation>(position));
+    t->Add(std::make_shared<Scale>(glm::vec3(scale)));
+    AddObject(model, shader, t);
 }
-
-

@@ -19,6 +19,15 @@
     <Filter Include="shaders">
       <UniqueIdentifier>{0b1fc235-56ef-481e-b196-08273c5728cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders\light">
+      <UniqueIdentifier>{dc0bca3f-44c8-4784-8d15-30995b47e1d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Zdrojové soubory\scenes">
+      <UniqueIdentifier>{58195685-e972-430c-a22d-6647a5198546}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\senes">
+      <UniqueIdentifier>{b2e59dfa-7503-4e23-a580-518584bd8d3d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -53,6 +62,21 @@
     </ClCompile>
     <ClCompile Include="Observer.cpp">
       <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="ILightObserver.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereScene.cpp">
+      <Filter>Zdrojové soubory\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="SolarSystemScene.cpp">
+      <Filter>Zdrojové soubory\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="ForestScene.cpp">
+      <Filter>Zdrojové soubory\scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -128,6 +152,30 @@
     <ClInclude Include="Observer.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="VertexAttributes.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Models\solar_panel.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ILightObserver.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereScene.h">
+      <Filter>Headers\senes</Filter>
+    </ClInclude>
+    <ClInclude Include="SolarSystemScene.h">
+      <Filter>Headers\senes</Filter>
+    </ClInclude>
+    <ClInclude Include="ForestScene.h">
+      <Filter>Headers\senes</Filter>
+    </ClInclude>
+    <ClInclude Include="Models\rocket.h">
+      <Filter>Models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basic.frag">
@@ -159,6 +207,45 @@
     </None>
     <None Include="shaders\login.vert">
       <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\light.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\light\planet.frag">
+      <Filter>shaders\light</Filter>
+    </None>
+    <None Include="shaders\light\planet.vert">
+      <Filter>shaders\light</Filter>
+    </None>
+    <None Include="shaders\light\sun.frag">
+      <Filter>shaders\light</Filter>
+    </None>
+    <None Include="shaders\light\sun.vert">
+      <Filter>shaders\light</Filter>
+    </None>
+    <None Include="shaders\light\phong.vert">
+      <Filter>shaders\light</Filter>
+    </None>
+    <None Include="shaders\light\blinn.frag">
+      <Filter>shaders\light</Filter>
+    </None>
+    <None Include="shaders\light\blinn.vert">
+      <Filter>shaders\light</Filter>
+    </None>
+    <None Include="shaders\light\constant.frag">
+      <Filter>shaders\light</Filter>
+    </None>
+    <None Include="shaders\light\constant.vert">
+      <Filter>shaders\light</Filter>
+    </None>
+    <None Include="shaders\light\lambert.frag">
+      <Filter>shaders\light</Filter>
+    </None>
+    <None Include="shaders\light\lambert.vert">
+      <Filter>shaders\light</Filter>
+    </None>
+    <None Include="shaders\light\phong.frag">
+      <Filter>shaders\light</Filter>
     </None>
   </ItemGroup>
 </Project>

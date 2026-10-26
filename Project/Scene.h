@@ -6,32 +6,40 @@
 
 #pragma once
 #include <vector>
+#include <memory>
+
 #include "DrawableObject.h"
 #include "ShaderProgram.h"
 #include "Model.h"
 #include "Camera.h"
 
-class Scene
-{
+class Scene {
 public:
-	~Scene();
+    virtual ~Scene() = default;
 
-	void AddObject(DrawableObject* object);
-	ShaderProgram* AddShader(const char* vertexPath, const char* fragmentPath);
-	Model* AddModel(const float* verticies, int vertexCount, const VertexLayout& layout);
+    virtual void Update(float deltaTime) {}        // Update the scene (light, clock, ...)
+    virtual glm::vec3 ClearColor() const;
+    void Draw();
 
-	void Draw();
+protected:
+    Scene(Camera& camera) : camera(camera) {}
 
-	std::vector<DrawableObject*>& GetObjects() { return objects; }
-	DrawableObject* GetSelectedObject();
+    ShaderProgram* AddShaderProgram(const char* vert, const char* frag);
 
-	void SelectNextObject();
+    template <size_t N>
+    Model* AddModel(const float(&data)[N], const VertexLayout& layout);
 
-private:
-	std::vector<DrawableObject*> objects;
-	std::vector<ShaderProgram*> shaders;
-	std::vector<Model*> models;
+    DrawableObject* AddObject(Model* model, ShaderProgram* shader, std::shared_ptr<Transformation> transformation);
+    void AddLogin(glm::vec3 position, float scale);
 
-	int selectedObjIndex = 0; // index of the currently selected object
+    Camera& camera;
+    std::vector<std::unique_ptr<ShaderProgram>> shaderPrograms;
+    std::vector<std::unique_ptr<Model>> models;
+    std::vector<std::unique_ptr<DrawableObject>> objects;
 };
 
+template <size_t N>
+Model* Scene::AddModel(const float(&data)[N], const VertexLayout& layout) {
+    models.push_back(std::make_unique<Model>(data, N / layout.floatsPerVertex, layout));
+    return models.back().get();
+}
