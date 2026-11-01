@@ -6,6 +6,7 @@
 
 #pragma once
 #include "Model.h"
+#include "Material.h"
 #include "ShaderProgram.h"
 #include "Transformation.h"
 #include "Camera.h"
@@ -21,5 +22,6 @@ public:
 private:
 	Model* model;
 	ShaderProgram* shader;
+	Material material;
 };
 

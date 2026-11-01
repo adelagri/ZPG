@@ -17,19 +17,19 @@ SphereScene::SphereScene(Camera& camera) : Scene(camera)
 	Model* sphereModel = AddModel(sphere, LAYOUT_POS_NORMAL);
 
 	auto sphereTransform1 = std::make_shared<TransformationComposite>();
-	sphereTransform1->Add(std::make_shared<Translation>(glm::vec3(1.5f, 0.0f, 0.0f)));
+	sphereTransform1->Add(std::make_shared<Translation>(glm::vec3(1.5f, 0.0f, -10.0f)));
 	AddObject(sphereModel, constantShader, sphereTransform1);
 
 	auto sphereTransform2 = std::make_shared<TransformationComposite>();
-	sphereTransform2->Add(std::make_shared<Translation>(glm::vec3(0.0f, 1.5f, 0.0f)));
+	sphereTransform2->Add(std::make_shared<Translation>(glm::vec3(0.0f, 1.5f, -10.0f)));
 	AddObject(sphereModel, lambertShader, sphereTransform2);
 
 	auto sphereTransform3 = std::make_shared<TransformationComposite>();
-	sphereTransform3->Add(std::make_shared<Translation>(glm::vec3(-1.5f, 0.0f, 0.0f)));
+	sphereTransform3->Add(std::make_shared<Translation>(glm::vec3(-1.5f, 0.0f, -10.0f)));
 	AddObject(sphereModel, phongShader, sphereTransform3);
 
 	auto sphereTransform4 = std::make_shared<TransformationComposite>();
-	sphereTransform4->Add(std::make_shared<Translation>(glm::vec3(0.0f, -1.5f, 0.0f)));
+	sphereTransform4->Add(std::make_shared<Translation>(glm::vec3(0.0f, -1.5f, -10.0f)));
 	AddObject(sphereModel, blinnShader, sphereTransform4);
 
 	AddLogin({ -2.0f, -2.0f, 0.0f }, 0.5f);

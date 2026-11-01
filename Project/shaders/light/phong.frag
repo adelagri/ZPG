@@ -13,6 +13,17 @@ uniform vec3 cameraPosition;
 
 out vec4 fragColor;
 
+// Point light attenuation calculation
+float attenuation(float d, float c, float l, float q)
+{
+    // d = distance from the light to the fragment
+    // c = constant attenuation factor
+    // l = linear attenuation factor
+    // q = quadratic attenuation factor
+    float att = 1.0/ (c + l*d + q*d*d);
+    return clamp(att , 0.0 , 1.0);
+}
+
 void main()
 {
     vec3 lightPosition = vec3(0.0); //Point Light position
@@ -22,12 +33,20 @@ void main()
     vec3 reflectVector = normalize(reflect(-lightToVector, n));
     vec3 viewVector = normalize(cameraPosition - worldPosition);
 
-    float dotProduct = max(dot(lightToVector, n), 0.0);
+    float dotProduct = dot(lightToVector, n);
+
+    float Is = 0.0;
+    if (dotProduct > 0.0) {
+        Is = pow(max(dot(viewVector, reflectVector), 0.0), 32.0);
+    }
+    
     vec4 objectColor = vec4( 0.385, 0.647, 0.812, 1.0);
 
-    vec4 Id = dotProduct * objectColor;
-    vec4 Ia = vec4( 0.1, 0.1, 0.1, 1.0);
-    float Is = pow(max(dot(viewVector, reflectVector), 0.0), 32.0);
+    float dist = distance(lightPosition, worldPosition);
+    float att = attenuation(dist, 1.0, 0.09, 0.032);
 
-    fragColor = Ia + Id + (Is * vec4(1.0));
+    vec4 Id = max(dotProduct, 0.0) * objectColor;
+    vec4 Ia = vec4( 0.1, 0.1, 0.1, 1.0);
+
+    fragColor = Ia + att * Id + (att * Is * vec4(1.0));
 }

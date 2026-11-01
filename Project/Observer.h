@@ -12,6 +12,6 @@ class Observer
 {
 public:
 	virtual ~Observer() = default;
-	virtual void Update(Camera& camera) = 0;
+	virtual void Update(const Camera& camera) = 0;
 };
 

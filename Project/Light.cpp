@@ -6,10 +6,13 @@
 
 #include "Light.h"
 
-void Light::Attach(ILightObserver* o)
+Light::Light(glm::vec3 p, float constant, float linear, float quadratic)
+	: position(p), con(constant), lin(linear), quad(quadratic) {}
+
+void Light::Attach(LightObserver* o)
 {
 	observers.push_back(o);
-	o->OnLightChanged(*this);	// Notify the observer of the current light state upon attachment
+	o->Update(*this);	// Notify the observer of the current light state upon attachment
 }
 
 void Light::SetPosition(const glm::vec3& p)
@@ -19,12 +22,32 @@ void Light::SetPosition(const glm::vec3& p)
 	}
 
 	position = p;
-	for (auto* o : observers) {
-		o->OnLightChanged(*this);
-	}
+	Notify();
 }
 
 const glm::vec3& Light::GetPosition() const
 {
 	return position;
+}
+
+float Light::GetConstant() const
+{
+	return con;
+}
+
+float Light::GetLinear() const
+{
+	return lin;
+}
+
+float Light::GetQuadratic() const
+{
+	return quad;
+}
+
+void Light::Notify()
+{
+	for (auto* o : observers) {
+		o->Update(*this);
+	}
 }

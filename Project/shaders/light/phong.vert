@@ -20,7 +20,9 @@ void main()
 {
     vec4 temp = modelMatrix * vec4(position,1.0f);
     worldPosition = temp.xyz / temp.w;
-    worldNormal = normal; //next lesson
+
+    mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));
+    worldNormal = normalize(normalMatrix * normal);
 
     gl_Position = (projectionMatrix * viewMatrix * modelMatrix) * vec4(position,1.0f);
 }

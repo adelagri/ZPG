@@ -128,10 +128,11 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ClockHands.cpp" />
     <ClCompile Include="DrawableObject.cpp" />
     <ClCompile Include="ForestScene.cpp" />
     <ClCompile Include="glad.cpp" />
-    <ClCompile Include="ILightObserver.cpp" />
+    <ClCompile Include="LightObserver.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -146,10 +147,12 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ClockHands.h" />
     <ClInclude Include="DrawableObject.h" />
     <ClInclude Include="ForestScene.h" />
-    <ClInclude Include="ILightObserver.h" />
+    <ClInclude Include="LightObserver.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Models\bushes.h" />
     <ClInclude Include="Models\clock.h" />
@@ -184,10 +187,13 @@
     <None Include="shaders\bush.vert" />
     <None Include="shaders\clock.vert" />
     <None Include="shaders\default.frag" />
+    <None Include="shaders\firefly.vert" />
     <None Include="shaders\light\blinn.frag" />
     <None Include="shaders\light\blinn.vert" />
     <None Include="shaders\light\constant.frag" />
     <None Include="shaders\light\constant.vert" />
+    <None Include="shaders\light\firefly-const.frag" />
+    <None Include="shaders\light\forest-blinn.frag" />
     <None Include="shaders\light\lambert.frag" />
     <None Include="shaders\light\lambert.vert" />
     <None Include="shaders\light\phong.frag" />

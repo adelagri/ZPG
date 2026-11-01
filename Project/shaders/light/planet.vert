@@ -27,6 +27,8 @@ void main()
 
     mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));
     worldNormal = normalize(normalMatrix * normal);
+    
+    //worldNormal = (mat3(modelMatrix) * normal); // would be ok if we don't use non-uniform scaling
 
     gl_Position = (projectionMatrix * viewMatrix * modelMatrix) * vec4(position,1.0f);
 }

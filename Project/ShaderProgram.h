@@ -8,7 +8,7 @@
 #include "Shader.h"
 #include "Observer.h"
 #include "VertexAttributes.h"
-#include "ILightObserver.h"
+#include "LightObserver.h"
 #include "Light.h"
 
 #include <glad/gl.h>
@@ -19,21 +19,20 @@
 #include <iostream>
 
 
-class ShaderProgram : public Observer, public ILightObserver
+class ShaderProgram : public Observer, public LightObserver
 {
 public:
 	ShaderProgram(const char* vertexPath, const char* fragmentPath);
 	~ShaderProgram();
 	void Use();
 
-	void OnLightChanged(const Light& l);
-
 	void SetUniform(const char* name, int value);
-	void SetUniform(const char* name, float value);
+	void SetUniform(const char* name, float value, bool required = true);
 	void SetUniform(const char* name, const glm::vec3& value, bool required = true);
 	void SetUniform(const char* name, const glm::mat4& matrix);
 
-	void Update(Camera& camera) override;	// Update the shader program with the camera's view and projection matrices
+	void Update(const Camera& camera) override;	// Update the shader program with the camera's view and projection matrices
+	void Update(const Light& light) override;	// Update the shader program with the light's properties
 
 private:
 	GLuint Id = 0;

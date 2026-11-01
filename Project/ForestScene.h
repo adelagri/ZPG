@@ -13,9 +13,16 @@ class ForestScene : public Scene
 {
 public:
     ForestScene(Camera& camera);
+	~ForestScene() override = default;
+
 	glm::vec3 ClearColor() const override;
 
+	void Update(float deltaTime) override;
+
 private:
-    Light light{ glm::vec3(0.0f) };
+    Light light;
+
+	std::shared_ptr<TransformationComposite> lightTransform;
+	ShaderProgram* clockShader = nullptr;
 };
 

@@ -4,7 +4,7 @@
 * ZPG 2026
 */
 
-#version 330 core
+#version 400
 
 in vec3 vertexColor;
 in vec3 vertexNormal;

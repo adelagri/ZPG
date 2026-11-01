@@ -66,7 +66,7 @@
     <ClCompile Include="Light.cpp">
       <Filter>Zdrojové soubory</Filter>
     </ClCompile>
-    <ClCompile Include="ILightObserver.cpp">
+    <ClCompile Include="LightObserver.cpp">
       <Filter>Zdrojové soubory</Filter>
     </ClCompile>
     <ClCompile Include="SphereScene.cpp">
@@ -77,6 +77,9 @@
     </ClCompile>
     <ClCompile Include="ForestScene.cpp">
       <Filter>Zdrojové soubory\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="ClockHands.cpp">
+      <Filter>Zdrojové soubory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -161,7 +164,7 @@
     <ClInclude Include="Light.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="ILightObserver.h">
+    <ClInclude Include="LightObserver.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="SphereScene.h">
@@ -175,6 +178,12 @@
     </ClInclude>
     <ClInclude Include="Models\rocket.h">
       <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="ClockHands.h">
+      <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -193,16 +202,10 @@
     <None Include="shaders\default.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shaders\tree.vert">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="shaders\tree.frag">
       <Filter>shaders</Filter>
     </None>
     <None Include="shaders\bush.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\bush.vert">
       <Filter>shaders</Filter>
     </None>
     <None Include="shaders\login.vert">
@@ -245,6 +248,21 @@
       <Filter>shaders\light</Filter>
     </None>
     <None Include="shaders\light\phong.frag">
+      <Filter>shaders\light</Filter>
+    </None>
+    <None Include="shaders\light\forest-blinn.frag">
+      <Filter>shaders\light</Filter>
+    </None>
+    <None Include="shaders\bush.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\tree.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\firefly.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\light\firefly-const.frag">
       <Filter>shaders\light</Filter>
     </None>
   </ItemGroup>

@@ -4,14 +4,11 @@
 * ZPG 2026
 */
 
-#version 330 core
+#version 400
 
 in vec3 position;
 in vec3 color;
 in vec3 normal;
-
-out vec3 vertexColor;
-out vec3 vertexNormal;
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
@@ -20,6 +17,10 @@ uniform mat4 projectionMatrix;
 uniform float hourAngle;
 uniform float minuteAngle;
 uniform float secondAngle;
+
+out vec3 vertexColor;
+out vec3 worldPosition;
+out vec3 worldNormal;
 
 vec3 rotateZ(vec3 p, float a)
 {
@@ -35,6 +36,12 @@ bool sameColor(vec3 a, vec3 b)
 
 void main()
 {
+    vec4 temp = modelMatrix * vec4(position,1.0f);
+    worldPosition = temp.xyz / temp.w;
+
+    mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));
+    worldNormal = normalize(normalMatrix * normal);
+
     vec3 pos = position;
     vec3 newColor = color;
 
@@ -67,6 +74,6 @@ void main()
     }
 
     vertexColor = newColor;
-    vertexNormal = normal;
+
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(pos, 1.0);
 }

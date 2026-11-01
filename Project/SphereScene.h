@@ -13,8 +13,6 @@ class SphereScene : public Scene
 {
 public:
     SphereScene(Camera& camera);
-
-private:
-    Light light{ glm::vec3(0.0f) };
+    ~SphereScene() override = default;
 };
 

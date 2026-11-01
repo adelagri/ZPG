@@ -124,121 +124,6 @@ void App::InitScenes()
 	scenes.push_back(std::make_unique<SolarSystemScene>(camera));
 	scenes.push_back(std::make_unique<SphereScene>(camera));
 	scenes.push_back(std::make_unique<ForestScene>(camera));
-
-	/*
-	// Clock scene with a clock model
-	Scene* scene2 = new Scene();
-	ShaderProgram* clockShader = scene2->AddShader("shaders/clock.vert", "shaders/default.frag");
-	camera.Attach(clockShader);
-
-	Model* clockMod = scene2->AddModel(
-		clockModel, sizeof(clockModel) / (sizeof(float) * LAYOUT_POS_NORMAL_COLOR.floatsPerVertex),
-		LAYOUT_POS_NORMAL_COLOR);
-
-	auto clockTransform = std::make_shared<TransformationComposite>();
-	clockTransform->Add(std::make_shared<Scale>(glm::vec3(-1.0f, 1.0f, 1.0f)));
-	DrawableObject* clockObj1 = new DrawableObject(clockMod, clockShader, clockTransform);
-	scene2->AddObject(clockObj1);
-	scenes.push_back(scene2);
-
-	
-	// Forest scene with trees and bushes
-	Scene* scene3 = new Scene();
-
-	ShaderProgram* treeShader = scene3->AddShader("shaders/tree.vert", "shaders/tree.frag");
-	ShaderProgram* bushShader = scene3->AddShader("shaders/bush.vert", "shaders/bush.frag");
-	ShaderProgram* groundShader = scene3->AddShader("shaders/basic.vert", "shaders/basic.frag");
-	ShaderProgram* loginShader = scene3->AddShader("shaders/login.vert", "shaders/default.frag");
-
-	camera.Attach(treeShader);
-	camera.Attach(bushShader);
-	camera.Attach(groundShader);
-	camera.Attach(loginShader);
-
-	Model* treeModel = scene3->AddModel(
-		tree, sizeof(tree) / (sizeof(float) * LAYOUT_POS_NORMAL.floatsPerVertex),
-		LAYOUT_POS_NORMAL);
-
-	Model* bushModel = scene3->AddModel(
-		bushes, sizeof(bushes) / (sizeof(float) * LAYOUT_POS_NORMAL.floatsPerVertex),
-		LAYOUT_POS_NORMAL);
-
-	Model* groundModel = scene3->AddModel(
-		ground, sizeof(ground) / (sizeof(float) * LAYOUT_POS_COLOR.floatsPerVertex),
-		LAYOUT_POS_COLOR);
-
-	Model* loginModel = scene3->AddModel(
-		login, sizeof(login) / (sizeof(float) * LAYOUT_POS_NORMAL.floatsPerVertex),
-		LAYOUT_POS_NORMAL);
-
-	for (int i = 0; i < 74; i++) {
-		float x = RandomFloat(-30.0f, 30.0f);
-		float z = RandomFloat(-0.8f, 20.0f);
-
-		float angle = RandomFloat(0.0f, 359.0f);	// random rotation angle in degrees
-		float scale = RandomFloat(0.5f, 1.2f);
-
-		auto treeTransform = std::make_shared<TransformationComposite>();
-		treeTransform->Add(std::make_shared<Translation>(glm::vec3(x, 0.0f, z)));
-		treeTransform->Add(std::make_shared<Rotation>(angle, glm::vec3(0, 1, 0)));
-		treeTransform->Add(std::make_shared<Scale>(glm::vec3(scale)));
-
-		DrawableObject* treeObj = new DrawableObject(treeModel, treeShader, treeTransform);
-
-		scene3->AddObject(treeObj);
-	}
-
-	for (int i = 0; i < 60; i++) {
-		float x = RandomFloat(-30.0f, 30.0f);
-		float z = RandomFloat(-0.8f, 20.0f);
-
-		float angle = RandomFloat(0.0f, 359.0f);	// random rotation angle in degrees
-		float scale = RandomFloat(0.8f, 2.0f);
-
-		auto bushTransform = std::make_shared<TransformationComposite>();
-		bushTransform->Add(std::make_shared<Translation>(glm::vec3(x, 0.0f, z)));
-		bushTransform->Add(std::make_shared<Rotation>(angle, glm::vec3(0, 1, 0)));
-		bushTransform->Add(std::make_shared<Scale>(glm::vec3(scale)));
-
-		DrawableObject* bushObj = new DrawableObject(bushModel, bushShader, bushTransform);
-
-		scene3->AddObject(bushObj);
-	}
-
-	auto groundTransform = std::make_shared<TransformationComposite>();
-	groundTransform->Add(std::make_shared<Translation>(glm::vec3(0.0f, 0.0f, 0.0f)));
-	groundTransform->Add(std::make_shared<Rotation>(90.0f, glm::vec3(1, 0, 0))); // rotate the ground to be horizontal
-	groundTransform->Add(std::make_shared<Scale>(glm::vec3(60.0f)));
-
-	DrawableObject* groundObj = new DrawableObject(groundModel, groundShader, groundTransform);
-	scene3->AddObject(groundObj);
-
-	auto loginTransform = std::make_shared<TransformationComposite>();
-	loginTransform->Add(std::make_shared<Translation>(glm::vec3(0.0f, 1.0f, -5.0f)));
-	loginTransform->Add(std::make_shared<Scale>(glm::vec3(1.0f)));
-
-	DrawableObject* loginObj = new DrawableObject(loginModel, loginShader, loginTransform);
-	scene3->AddObject(loginObj);
-
-
-	// Add the clock model to the forest scene with different transformations
-	auto clockTransform2 = std::make_shared<TransformationComposite>();
-	clockTransform2->Add(std::make_shared<Translation>(glm::vec3(2.0f, 3.0f, -1.0f)));
-	clockTransform2->Add(std::make_shared<Scale>(glm::vec3(-0.5f, 0.5f, 0.5f)));
-	scene3->AddObject(new DrawableObject(clockMod, clockShader, clockTransform2));
-
-	auto clockTransform3 = std::make_shared<TransformationComposite>();
-	clockTransform3->Add(std::make_shared<Translation>(glm::vec3(-2.0f, 3.0f, 2.0f)));
-	clockTransform3->Add(std::make_shared<Rotation>(60.0f, glm::vec3(0, 1, 0)));
-	clockTransform3->Add(std::make_shared<Scale>(glm::vec3(-0.5f, 0.5f, 0.5f)));
-	scene3->AddObject(new DrawableObject(clockMod, clockShader, clockTransform3));
-
-	scenes.push_back(scene3);
-
-	this->clockShader = clockShader;	// store the clock shader for updating the clock hands in the main loop
-	*/
-
-	// Sphere scene with light shader used
 }
 
 void App::ErrorCallback(int error, const char* description) { fputs(description, stderr); }
@@ -289,7 +174,7 @@ void App::OnResize(int width, int height)
 {
 	this->width = width;
 	this->height = height;
-	camera.SetRatio((float)width / (float)height);
+	//camera.SetRatio((float)width / (float)height);
 	glViewport(0, 0, width, height);
 
 }

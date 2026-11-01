@@ -49,12 +49,6 @@ void ShaderProgram::Use()
 	glUseProgram(Id);
 }
 
-void ShaderProgram::OnLightChanged(const Light& l)
-{
-	Use();
-	SetUniform("lightPosition", l.GetPosition(), false);
-}
-
 void ShaderProgram::SetUniform(const char* name, int value)
 {
 	GLint location = glGetUniformLocation(Id, name);
@@ -66,10 +60,10 @@ void ShaderProgram::SetUniform(const char* name, int value)
 	glUniform1i(location, value);
 }
 
-void ShaderProgram::SetUniform(const char* name, float value)
+void ShaderProgram::SetUniform(const char* name, float value, bool required)
 {
 	GLint location = glGetUniformLocation(Id, name);
-	if (location == -1)
+	if (location == -1 && required)
 	{
 		std::cerr << "Error: uniform '" << name << "' not found in shader program." << std::endl;
 		exit(-1);
@@ -99,10 +93,19 @@ void ShaderProgram::SetUniform(const char* name, const glm::mat4& matrix)
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void ShaderProgram::Update(Camera& camera)
+void ShaderProgram::Update(const Camera& camera)
 {
 	Use();	// Use the shader program before setting uniforms
 	SetUniform("viewMatrix", camera.GetViewMatrix());
 	SetUniform("projectionMatrix", camera.GetProjectionMatrix());
 	SetUniform("cameraPosition", camera.GetEye(), false);
+}
+
+void ShaderProgram::Update(const Light& light)
+{
+	Use();
+	SetUniform("lightPosition", light.GetPosition(), false);
+	SetUniform("attConstant", light.GetConstant(), false);
+	SetUniform("attLinear", light.GetLinear(), false);
+	SetUniform("attQuadratic", light.GetQuadratic(), false);
 }

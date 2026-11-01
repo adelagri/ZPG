@@ -33,7 +33,7 @@ namespace {
 	}
 }
 
-SolarSystemScene::SolarSystemScene(Camera& camera) : Scene(camera)
+SolarSystemScene::SolarSystemScene(Camera& camera) : Scene(camera), light(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, 0.0f, 0.0f)
 {
 	ShaderProgram* sunShader = AddShaderProgram("shaders/light/sun.vert", "shaders/light/sun.frag");
 	ShaderProgram* planetShader = AddShaderProgram("shaders/light/planet.vert", "shaders/light/planet.frag");

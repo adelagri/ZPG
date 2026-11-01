@@ -13,10 +13,13 @@ class SolarSystemScene : public Scene
 {
 public:
     SolarSystemScene(Camera& camera);
+    ~SolarSystemScene() override = default;
+
     void Update(float deltaTime) override;
 
 private:
-    Light light{ glm::vec3(0.0f) };
+    Light light;
+
     std::shared_ptr<TransformationComposite> sunTransform;
 };
 
